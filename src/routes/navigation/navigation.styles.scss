@@ -18,10 +18,9 @@
       align-items: center;
       justify-content: flex-end;
   
-      .nav-link {
+      .nav-link, .signIn-link {
         cursor: pointer;
-        width: 50px;
-        padding: 5px;
+        padding: 10px;
       }
     }
   }
