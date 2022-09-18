@@ -1,10 +1,11 @@
-import { useState } from "react";
+import React,{ useState, useContext } from "react";
 import {
   signInWithGooglePopup,
   signInUserWithEmailPassword,
   auth,
   createUserDocumentFromAuth,
 } from "../../utils/firebase/firebase.utils";
+import { UserContext } from "../../contexts/user.context";
 import FormInput from "../form-input/form-input.component";
 import Button from "../button/button.component";
 import "./sign-in-form.styles.scss";
@@ -18,39 +19,43 @@ const SignInForm = () => {
   const [signInFields, setSignInFields] = useState(defaultFields);
   const { email, password } = signInFields;
 
+  const { setCurrentUser } = useContext(UserContext);
+
   const onHandleChange = (event) => {
     const { name, value } = event.target;
     setSignInFields({ ...signInFields, [name]: value });
   };
 
-  const onFormSubmit = (async(event) => {
+  const onFormSubmit = async (event) => {
     event.preventDefault();
-    try{
-        const response = await signInUserWithEmailPassword(email, password);
-        console.log(response);
-        resetFormFields();
-    }catch(error){
-        const errorCode = error.code;
-        switch(errorCode){
-            case 'auth/wrong-password':
-                alert('Incorrect password for email.');
-                break;
-            case 'auth/user-not-found':
-                alert('No user associated with this email.');
-                break;
-            default:
-                console.log(error);
-        }
+    try {
+      const response = await signInUserWithEmailPassword(email, password);
+      console.log(response.user);
+      setCurrentUser(response.user);
+      resetFormFields();
+    } catch (error) {
+      const errorCode = error.code;
+      switch (errorCode) {
+        case "auth/wrong-password":
+          alert("Incorrect password for email.");
+          break;
+        case "auth/user-not-found":
+          alert("No user associated with this email.");
+          break;
+        default:
+          console.log(error);
+      }
     }
-  });
+  };
 
-  const resetFormFields =()=>{
+  const resetFormFields = () => {
     setSignInFields(defaultFields);
   };
 
   const signInGoogleUser = async () => {
     const { user } = await signInWithGooglePopup();
     const userDocRef = await createUserDocumentFromAuth(user);
+    setCurrentUser(user);
   };
 
   return (

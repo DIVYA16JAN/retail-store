@@ -1,3 +1,4 @@
+import React from "react";
 import Categories from '../../components/categories/categories.component';
 import './homePage.styles.scss';
 
